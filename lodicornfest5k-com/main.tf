@@ -2,7 +2,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 3"
+      version = "3.4.0"
     }
   }
 
@@ -10,7 +10,7 @@ terraform {
     organization = "morriscloud"
 
     workspaces {
-      name = "dns-morriscloud-com"
+      name = "dns-lodicornfest5k-com"
     }
   }
 }
@@ -19,8 +19,7 @@ provider "cloudflare" {
 }
 
 locals {
-  argo_tunnel = "0d8c0bc5-bdaa-4c17-9995-5b59902aa138.cfargotunnel.com"
-  domain      = "morriscloud.com"
+  domain = "lodicornfest5k.com"
 }
 
 module "zone" {
@@ -34,13 +33,17 @@ module "zone" {
 }
 
 module "cname" {
-  for_each = { for cname in local.cnames : cname.name => cname }
+  for_each = { for cname in local.cnames : cname.id => cname }
   source   = "../modules/cname"
 
   zone_id = module.zone.id
   name    = each.value.name
   value   = each.value.value
   proxied = each.value.proxied
+
+  providers = {
+    cloudflare = cloudflare
+  }
 }
 
 module "mx" {
@@ -52,6 +55,10 @@ module "mx" {
   value           = each.value.value
   allow_overwrite = each.value.allow_overwrite
   priority        = each.value.priority
+
+  providers = {
+    cloudflare = cloudflare
+  }
 }
 
 module "txt" {
@@ -61,4 +68,8 @@ module "txt" {
   zone_id = module.zone.id
   name    = each.value.name
   value   = each.value.value
+
+  providers = {
+    cloudflare = cloudflare
+  }
 }
