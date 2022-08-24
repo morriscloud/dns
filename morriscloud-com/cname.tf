@@ -1,6 +1,11 @@
 locals {
   cnames = [{
-    name    = "aws-terraform-static",
+    id = "aws-pulumi-static"
+    name = "aws-pulumi-static",
+    value = "aws-pulumi-static.morriscloud.com.s3-website-us-east-1.amazonaws.com"
+    proxied = true
+  }, {
+    id    = "aws-terraform-static",
     name    = "aws-terraform-static",
     value   = "aws-terraform-static.morriscloud.com.s3-website.us-east-2.amazonaws.com",
     proxied = true
